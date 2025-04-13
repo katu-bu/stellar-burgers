@@ -29,25 +29,21 @@ const initialState: TUserState = {
 
 export const loginUser = createAsyncThunk(
   'user/loginUser',
-  async ({ email, password }: TLoginData) => {
-    return await loginUserApi({ email, password });
-  }
+  async ({ email, password }: TLoginData) =>
+    await loginUserApi({ email, password })
 );
 export const updateUser = createAsyncThunk(
   'user/updateUser',
-  async (data: TRegisterData) => {
-    return await updateUserApi(data);
-  }
+  async (data: TRegisterData) => await updateUserApi(data)
 );
 export const registerUser = createAsyncThunk(
   'user/registerData',
-  async (data: TRegisterData) => {
-    return await registerUserApi(data);
-  }
+  async (data: TRegisterData) => await registerUserApi(data)
 );
-export const getUser = createAsyncThunk('user/getUser', async () => {
-  return await getUserApi();
-});
+export const getUser = createAsyncThunk(
+  'user/getUser',
+  async () => await getUserApi()
+);
 export const logoutUser = createAsyncThunk('user/logout', async () => {
   const response = await logoutApi();
   deleteCookie('accessToken');

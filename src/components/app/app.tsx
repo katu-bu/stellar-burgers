@@ -1,5 +1,11 @@
-import React, { useState } from 'react';
-import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import {
+  Routes,
+  Route,
+  useLocation,
+  useNavigate,
+  Navigate
+} from 'react-router-dom';
 import {
   ConstructorPage,
   Feed,
@@ -14,6 +20,50 @@ import {
 import '../../index.css';
 import styles from './app.module.css';
 import { AppHeader, Modal, IngredientDetails, OrderInfo } from '@components';
+import { useSelector } from 'react-redux';
+import { RootState, useDispatch } from '../../services/store';
+import { getUser } from '../../services/userSlice';
+import { Preloader } from '../ui/preloader';
+import { fetchIngredients } from '../../services/ingredientsSlice';
+
+// компонент защищенного роута
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+
+// защищенный роут для залогиненных пользователей
+const AuthenticatedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const isAuthChecked = useSelector(
+    (state: RootState) => state.user.isAuthChecked
+  );
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.user.isAuthenticated
+  );
+  if (!isAuthChecked) {
+    return <Preloader />;
+  }
+  if (!isAuthenticated) {
+    return <Navigate to='/login' replace />;
+  }
+  return <>{children}</>;
+};
+
+// защищенный роут для незалогиненных пользователей
+const NonAuthenticatedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const isAuthChecked = useSelector(
+    (state: RootState) => state.user.isAuthChecked
+  );
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.user.isAuthenticated
+  );
+  if (!isAuthChecked) {
+    return <Preloader />;
+  }
+  if (isAuthenticated) {
+    return <Navigate to='/' replace />;
+  }
+  return <>{children}</>;
+};
 
 const App = () => {
   const location = useLocation();
@@ -24,6 +74,12 @@ const App = () => {
   const handleModalClose = () => {
     navigate(-1);
   };
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getUser());
+    // Вызов thunk для загрузки ингредиентов
+    dispatch(fetchIngredients());
+  }, [dispatch]);
 
   return (
     <div className={styles.app}>
@@ -33,56 +89,81 @@ const App = () => {
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
         {/* Роуты для модалок с доп информацией */}
-        {backgroundLocation && (
-          <Routes>
-            <Route
-              path='/feed/:number'
-              element={
-                <Modal title='Детали заказа' onClose={handleModalClose}>
-                  <OrderInfo />
-                </Modal>
-              }
-            />
-            <Route
-              path='/ingredients/:id'
-              element={
-                <Modal title='Детали ингредиента' onClose={handleModalClose}>
-                  <IngredientDetails />
-                </Modal>
-              }
-            />
-            <Route
-              path='/profile/orders/:number'
-              element={
-                <ProtectedRoute>
-                  <Modal title='Детали заказа' onClose={handleModalClose}>
-                    <OrderInfo />
-                  </Modal>
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        )}
+        <Route
+          path='/feed/:number'
+          element={
+            <Modal title='Детали заказа' onClose={handleModalClose}>
+              <OrderInfo />
+            </Modal>
+          }
+        />
+        <Route
+          path='/ingredients/:id'
+          element={
+            <Modal title='Детали ингредиента' onClose={handleModalClose}>
+              <IngredientDetails />
+            </Modal>
+          }
+        />
+        {/* Защищенный роут для модалки с доп информацией по деталям заказа */}
+        <Route
+          path='/profile/orders/:number'
+          element={
+            <AuthenticatedRoute>
+              <Modal title='Детали заказа' onClose={handleModalClose}>
+                <OrderInfo />
+              </Modal>
+            </AuthenticatedRoute>
+          }
+        />
         {/* Защищенные роуты */}
-        <Route path='/login' element={<Login />} />
-        <Route path='/register' element={<Register />} />
-        <Route path='/forgot-password' element={<ForgotPassword />} />
-        <Route path='/reset-password' element={<ResetPassword />} />
+        <Route
+          path='/login'
+          element={
+            <NonAuthenticatedRoute>
+              <Login />
+            </NonAuthenticatedRoute>
+          }
+        />
+        <Route
+          path='/register'
+          element={
+            <NonAuthenticatedRoute>
+              <Register />
+            </NonAuthenticatedRoute>
+          }
+        />
+        <Route
+          path='/forgot-password'
+          element={
+            <NonAuthenticatedRoute>
+              <ForgotPassword />
+            </NonAuthenticatedRoute>
+          }
+        />
+        <Route
+          path='/reset-password'
+          element={
+            <NonAuthenticatedRoute>
+              <ResetPassword />
+            </NonAuthenticatedRoute>
+          }
+        />
         {/* Защищенные роуты профиля */}
         <Route
           path='/profile'
           element={
-            <ProtectedRoute>
+            <AuthenticatedRoute>
               <Profile />
-            </ProtectedRoute>
+            </AuthenticatedRoute>
           }
         />
         <Route
           path='/profile/orders'
           element={
-            <ProtectedRoute>
+            <AuthenticatedRoute>
               <ProfileOrders />
-            </ProtectedRoute>
+            </AuthenticatedRoute>
           }
         />
         {/* Роут ошибки -страница не найдена */}
@@ -90,16 +171,6 @@ const App = () => {
       </Routes>
     </div>
   );
-};
-
-// Компонент защищенного роута
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-}
-
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const isAuthenticated = false; // TODO потом поменять на верную логику проверки авторизации
-  return isAuthenticated ? <>{children}</> : <Login />;
 };
 
 export default App;

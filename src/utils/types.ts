@@ -12,8 +12,11 @@ export type TIngredient = {
   image_mobile: string;
 };
 
-export type TConstructorIngredient = TIngredient & {
-  id: string;
+export type TConstructorIngredient = TIngredient & { reactDisplayId: number };
+
+export type TConstructorItems = {
+  bun?: TIngredient;
+  ingredients: TConstructorIngredient[];
 };
 
 export type TOrder = {
@@ -26,11 +29,16 @@ export type TOrder = {
   ingredients: string[];
 };
 
+export type TOrderWithName = {
+  order: TOrder;
+  name: string;
+};
+
+export type TFeedMetadata = { total: number; totalToday: number };
+
 export type TOrdersData = {
   orders: TOrder[];
-  total: number;
-  totalToday: number;
-};
+} & TFeedMetadata;
 
 export type TUser = {
   email: string;

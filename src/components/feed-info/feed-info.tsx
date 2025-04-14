@@ -1,8 +1,7 @@
 import { FC } from 'react';
 import { TOrder } from '@utils-types';
 import { FeedInfoUI } from '../ui/feed-info';
-import { RootState } from '../../services/store';
-import { useSelector } from 'react-redux';
+import { useSelector } from '../../services/store';
 
 const getOrders = (orders: TOrder[], status: string): number[] =>
   orders
@@ -12,7 +11,7 @@ const getOrders = (orders: TOrder[], status: string): number[] =>
 
 export const FeedInfo: FC = () => {
   const { orders, totalToday, total } = useSelector(
-    (state: RootState) => state.feed.ordersData
+    (state) => state.feed.ordersData
   );
 
   const readyOrders = getOrders(orders, 'done');

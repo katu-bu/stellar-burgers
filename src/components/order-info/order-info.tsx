@@ -3,7 +3,7 @@ import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient, TOrder } from '@utils-types';
 import { useParams } from 'react-router-dom';
-import { RootState, useDispatch, useSelector } from '../../services/store';
+import { useDispatch, useSelector } from '../../services/store';
 import { fetchOrder } from '../../services/orderModalDataSlice';
 
 function extractIngredients(orderData: TOrder, allIngredients: TIngredient[]) {
@@ -48,21 +48,12 @@ function extractData(
 export const OrderInfo: FC = () => {
   const { number } = useParams<{ number: string }>();
   const isLoading = useSelector(
-    (state: RootState) =>
-      state.ingredients.isLoading || state.orderModal.isLoading
+    (state) => state.ingredients.isLoading || state.orderModal.isLoading
   );
-  const orderModalData = useSelector(
-    (state: RootState) => state.orderModal.orderData
-  );
-  const feedOrders = useSelector(
-    (state: RootState) => state.feed.ordersData.orders
-  );
-  const myOrders = useSelector(
-    (state: RootState) => state.myOrders.ordersData.orders
-  );
-  const allIngredients = useSelector(
-    (state: RootState) => state.ingredients.ingredients
-  );
+  const orderModalData = useSelector((state) => state.orderModal.orderData);
+  const feedOrders = useSelector((state) => state.feed.ordersData.orders);
+  const myOrders = useSelector((state) => state.myOrders.ordersData.orders);
+  const allIngredients = useSelector((state) => state.ingredients.ingredients);
   const orders = [...myOrders, ...feedOrders];
   const dispatch = useDispatch();
   useEffect(() => {

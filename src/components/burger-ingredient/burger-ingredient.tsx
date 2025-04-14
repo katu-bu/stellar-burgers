@@ -18,7 +18,7 @@ export const BurgerIngredient: FC<TBurgerIngredientProps> = memo(
       <BurgerIngredientUI
         ingredient={ingredient}
         count={count}
-        locationState={{ background: location }}
+        locationState={{ background: location, openModal: true }}
         handleAdd={handleAdd}
       />
     );

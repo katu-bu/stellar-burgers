@@ -146,7 +146,9 @@ describe('orderSuccessModalDataSlice', () => {
 
     it('должен обрабатывать ошибки при неудачном запросе', async () => {
       const errorMessage = 'Ошибка оформления заказа';
-      (orderBurgerApi as jest.Mock).mockRejectedValue(new Error('Ошибка оформления заказа'));
+      (orderBurgerApi as jest.Mock).mockRejectedValue(
+        new Error('Ошибка оформления заказа')
+      );
 
       const dispatch = jest.fn();
       const getState = jest.fn();

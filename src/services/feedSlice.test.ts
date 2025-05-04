@@ -73,7 +73,12 @@ describe('feedSlice', () => {
     it('должен обрабатывать fetchFeed.rejected', () => {
       const actual = feedReducer(
         initialState,
-        fetchFeed.rejected(new Error('Ошибка получения фида'), '', undefined, 'Ошибка получения фида')
+        fetchFeed.rejected(
+          new Error('Ошибка получения фида'),
+          '',
+          undefined,
+          'Ошибка получения фида'
+        )
       );
       expect(actual.isLoading).toBe(false);
       expect(actual.error).toBe('Ошибка получения фида');
@@ -103,7 +108,9 @@ describe('feedSlice', () => {
     });
 
     it('должен обрабатывать ошибки при неудачном запросе', async () => {
-      (getFeedsApi as jest.Mock).mockRejectedValue(new Error('Ошибка получения фида'));
+      (getFeedsApi as jest.Mock).mockRejectedValue(
+        new Error('Ошибка получения фида')
+      );
 
       const dispatch = jest.fn();
       const getState = jest.fn();

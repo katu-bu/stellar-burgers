@@ -171,6 +171,25 @@ describe('Тесты конструктора бургера', () => {
       // Закрываем модальное окно
       cy.get('body').type('{esc}');
       cy.contains('идентификатор заказа').should('not.exist');
+
+      // Проверяем, что конструктор пуст после оформления заказа
+
+      // Проверка на отсутствие булок
+      cy.contains('верх').should('not.exist');
+      cy.contains('низ').should('not.exist');
+      // Проверка на отсутствие начинок
+      cy.contains('button', 'Оформить заказ')
+        .parent()
+        .within(() => {
+          // Проверяем, что сумма заказа 0
+          cy.contains('0').should('exist');
+
+          // Проверяем, что нет ни одного из добавленных ранее ингредиентов
+          cy.contains('Биокотлета из марсианской Магнолии').should('not.exist');
+          cy.contains('Соус Spicy-X').should('not.exist');
+        });
+      // TODO раскоментировать после исправления бага
+      // cy.contains('button', 'Оформить заказ').should('be.disabled');
     });
   });
 });

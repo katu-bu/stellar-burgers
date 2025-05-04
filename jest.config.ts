@@ -3,7 +3,7 @@
  * https://jestjs.io/docs/configuration
  */
 
-import type {Config} from 'jest';
+import type { Config } from 'jest';
 
 const config: Config = {
   // All imported modules in your tests should be mocked automatically
@@ -25,7 +25,7 @@ const config: Config = {
   // collectCoverageFrom: undefined,
 
   // The directory where Jest should output its coverage files
-  coverageDirectory: "coverage",
+  coverageDirectory: 'coverage',
 
   // An array of regexp pattern strings used to skip coverage collection
   // coveragePathIgnorePatterns: [
@@ -33,7 +33,7 @@ const config: Config = {
   // ],
 
   // Indicates which provider should be used to instrument code for coverage
-  coverageProvider: "v8",
+  coverageProvider: 'v8',
 
   // A list of reporter names that Jest uses when writing coverage reports
   // coverageReporters: [
@@ -90,7 +90,16 @@ const config: Config = {
   // ],
 
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
-  // moduleNameMapper: {},
+  moduleNameMapper: {
+    '^@pages$': '<rootDir>/src/pages',
+    '^@components$': '<rootDir>/src/components',
+    '^@ui$': '<rootDir>/src/components/ui',
+    '^@ui-pages$': '<rootDir>/src/components/ui/pages',
+    '^@utils-types$': '<rootDir>/src/utils/types',
+    '^@api$': '<rootDir>/src/utils/burger-api.ts',
+    '^@slices$': '<rootDir>/src/services/slices',
+    '^@selectors$': '<rootDir>/src/services/selectors'
+  },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
   // modulePathIgnorePatterns: [],
@@ -146,8 +155,8 @@ const config: Config = {
   // snapshotSerializers: [],
 
   // The test environment that will be used for testing
-  // testEnvironment: "jest-environment-node",
-
+  testEnvironment: 'jsdom',
+  
   // Options that will be passed to the testEnvironment
   // testEnvironmentOptions: {},
 
@@ -195,7 +204,7 @@ const config: Config = {
   // Whether to use watchman for file crawling
   // watchman: true,
 
-   preset: 'ts-jest'
+  preset: 'ts-jest'
 };
 
 export default config;

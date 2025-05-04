@@ -24,7 +24,7 @@ export const fetchFeed = createAsyncThunk(
       const data = await getFeedsApi();
       return data;
     } catch (error) {
-      return rejectWithValue('Не удалось загрузить фид');
+      return rejectWithValue('Не удалось загрузить список всех заказов');
     }
   }
 );

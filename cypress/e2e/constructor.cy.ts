@@ -188,8 +188,7 @@ describe('Тесты конструктора бургера', () => {
           cy.contains('Биокотлета из марсианской Магнолии').should('not.exist');
           cy.contains('Соус Spicy-X').should('not.exist');
         });
-      // TODO раскоментировать после исправления бага
-      // cy.contains('button', 'Оформить заказ').should('be.disabled');
+      cy.contains('button', 'Оформить заказ').should('be.disabled');
     });
   });
 });

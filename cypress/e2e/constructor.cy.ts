@@ -1,6 +1,6 @@
 describe('Тесты конструктора бургера', () => {
   beforeEach(() => {
-    // Перехватить API-запрос и подготовить приложение
+    // Загружаем страницу и ждем загрузки ингредиентов
     cy.intercept('GET', '**/ingredients', { fixture: 'ingredients.json' }).as(
       'getIngredients'
     );
@@ -115,6 +115,62 @@ describe('Тесты конструктора бургера', () => {
 
       // Проверяем, что модальное окно закрылось
       cy.contains('Детали ингредиента').should('not.exist');
+    });
+  });
+
+  describe('Создание заказа', () => {
+    beforeEach(() => {
+      // Перехватываем запросы API для аутентификации и заказа
+      cy.intercept('GET', '**/auth/user', { fixture: 'user.json' }).as(
+        'getUser'
+      );
+      cy.intercept('POST', '**/orders', { fixture: 'order.json' }).as(
+        'createOrder'
+      );
+
+      // Устанавливаем моковые токены
+      localStorage.setItem('accessToken', 'Bearer test-access-token');
+      localStorage.setItem('refreshToken', 'test-refresh-token');
+
+      // Загружаем страницу и ждем загрузки ингредиентов
+      cy.intercept('GET', '**/ingredients', { fixture: 'ingredients.json' }).as(
+        'getIngredients'
+      );
+      cy.visit('/');
+      cy.wait('@getIngredients');
+    });
+
+    it('должен создавать заказ после добавления всех ингредиентов', () => {
+      // Добавляем булку
+      cy.contains('Краторная булка N-200i').parent().find('button').click();
+      cy.contains('Краторная булка N-200i (верх)').should('be.visible');
+      cy.contains('Краторная булка N-200i (низ)').should('be.visible');
+
+      // Добавляем ингридиенты
+      cy.contains('Биокотлета из марсианской Магнолии')
+        .parent()
+        .find('button')
+        .click();
+      cy.contains('Соус Spicy-X').parent().find('button').click();
+
+      // Проверяем общую сумму заказа
+      // Сумма цен: булка (1255 * 2) + начинка (424) + соус (90) = 3024
+      cy.contains('3024').should('exist');
+
+      cy.contains('button', 'Оформить заказ').click();
+
+      // Ожидаем запрос на создание заказа
+      cy.wait('@createOrder');
+
+      // Проверяем, что модальное окно с деталями заказа открылось
+      cy.contains('идентификатор заказа').should('be.visible');
+      cy.contains('12345').should('be.visible');
+
+      cy.contains('Ваш заказ начали готовить').should('be.visible');
+
+      // Закрываем модальное окно
+      cy.get('body').type('{esc}');
+      cy.contains('идентификатор заказа').should('not.exist');
     });
   });
 });

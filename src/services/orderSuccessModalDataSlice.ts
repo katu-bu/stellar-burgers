@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { orderBurgerApi } from '../utils/burger-api';
 import { TOrderWithName } from '../utils/types';
 
@@ -10,7 +10,7 @@ export interface OrderSuccessModalState {
 }
 
 // Изначальное состояние
-const initialState: OrderSuccessModalState = {
+export const initialState: OrderSuccessModalState = {
   isLoading: false,
   error: null
 };

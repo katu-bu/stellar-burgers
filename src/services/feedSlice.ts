@@ -10,7 +10,7 @@ export interface FeedState {
 }
 
 // Изначальное состояние
-const initialState: FeedState = {
+export const initialState: FeedState = {
   ordersData: { orders: [], total: 0, totalToday: 0 },
   isLoading: false,
   error: null

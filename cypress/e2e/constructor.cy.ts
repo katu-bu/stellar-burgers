@@ -1,11 +1,16 @@
 describe('Тесты конструктора бургера', () => {
   beforeEach(() => {
-    // загружаем страницу и ждем загрузки ингредиентов
-    cy.intercept('GET', '**/ingredients', { fixture: 'ingredients.json' }).as(
-      'getIngredients'
-    );
+    cy.mockApi();
     cy.visit('/');
     cy.wait('@getIngredients');
+
+    // алиасы для часто используемых элементов
+    cy.contains('Краторная булка N-200i').as('bunItem');
+    cy.contains('Биокотлета из марсианской Магнолии').as('pattyItem');
+    cy.contains('Филе Люминесцентного тетраодонтимформа').as('filletItem');
+    cy.contains('Соус Spicy-X').as('spicySauceItem');
+    cy.contains('Соус фирменный Space Sauce').as('spaceSauceItem');
+    cy.contains('button', 'Оформить заказ').as('orderButton');
   });
 
   it('должен загружать ингредиенты из мок-данных', () => {
@@ -14,34 +19,27 @@ describe('Тесты конструктора бургера', () => {
     cy.contains('Начинки').should('be.visible');
     cy.contains('Соусы').should('be.visible');
 
-    cy.contains('Краторная булка N-200i').should('exist');
-    cy.contains('Филе Люминесцентного тетраодонтимформа').should('exist');
-    cy.contains('Соус фирменный Space Sauce').should('exist');
+    cy.get('@bunItem').should('exist');
+    cy.get('@filletItem').should('exist');
+    cy.get('@spaceSauceItem').should('exist');
   });
 
   it('должен позволять добавить булку в конструктор через кнопку', () => {
-    // добавление булки и проверка её наличия
-    cy.contains('Краторная булка N-200i').parent().find('button').click();
+    // добавление булки и проверка её наличия с помощью custom command
+    cy.addIngredient('@bunItem');
 
     cy.contains('Краторная булка N-200i (верх)').should('be.visible');
     cy.contains('Краторная булка N-200i (низ)').should('be.visible');
   });
 
   it('должен позволять добавить начинки в конструктор через кнопку', () => {
-    // добавление и проверка ингредиентов в конструкторе
-    cy.contains('Биокотлета из марсианской Магнолии')
-      .parent()
-      .find('button')
-      .click();
-    cy.contains('Филе Люминесцентного тетраодонтимформа')
-      .parent()
-      .find('button')
-      .click();
+    // добавление и проверка ингредиентов в конструкторе с помощью custom commands
+    cy.addIngredient('@pattyItem');
+    cy.addIngredient('@filletItem');
+    cy.addIngredient('@spicySauceItem');
+    cy.addIngredient('@spaceSauceItem');
 
-    cy.contains('Соус Spicy-X').parent().find('button').click();
-    cy.contains('Соус фирменный Space Sauce').parent().find('button').click();
-
-    cy.contains('button', 'Оформить заказ')
+    cy.get('@orderButton')
       .closest('section')
       .within(() => {
         cy.contains('Биокотлета из марсианской Магнолии').should('exist');
@@ -52,114 +50,81 @@ describe('Тесты конструктора бургера', () => {
   });
 
   it('должен позволять добавить несколько ингредиентов для создания полного бургера', () => {
-    // создание полного бургера
-    cy.contains('Краторная булка N-200i').parent().find('button').click();
+    // создание полного бургера с помощью custom commands
+    cy.addIngredient('@bunItem');
+    cy.addIngredient('@pattyItem');
+    cy.addIngredient('@filletItem');
+    cy.addIngredient('@spicySauceItem');
+    cy.addIngredient('@spaceSauceItem');
 
-    cy.contains('Биокотлета из марсианской Магнолии')
-      .parent()
-      .find('button')
-      .click();
-    cy.contains('Филе Люминесцентного тетраодонтимформа')
-      .parent()
-      .find('button')
-      .click();
+    // сохраняем цены в алиасы для проверки
+    cy.contains('1255').as('bunPrice').should('exist'); // цена булки
+    cy.contains('424').as('pattyPrice').should('exist'); // цена основного ингредиента
+    cy.contains('988').as('filletPrice').should('exist'); // цена второго основного ингредиента
+    cy.contains('90').as('spicySaucePrice').should('exist'); // цена соуса
+    cy.contains('80').as('spaceSaucePrice').should('exist'); // цена второго соуса
 
-    cy.contains('Соус Spicy-X').parent().find('button').click();
-    cy.contains('Соус фирменный Space Sauce').parent().find('button').click();
-
-    cy.contains('1255').should('exist'); // цена булки
-    cy.contains('424').should('exist'); // цена основного ингредиента
-    cy.contains('988').should('exist'); // цена второго основного ингредиента
-    cy.contains('90').should('exist'); // цена соуса
-    cy.contains('80').should('exist'); // цена второго соуса
-
-    cy.contains('button', 'Оформить заказ')
-      .should('be.visible')
-      .and('not.be.disabled');
+    cy.get('@orderButton').should('be.visible').and('not.be.disabled');
   });
 
   describe('Тесты модальных окон', () => {
     it('должен открывать модальное окно ингредиента при клике на карточку', () => {
-      // открытие модального окна ингредиента - клик на карточку ингредиента
-      cy.contains('Краторная булка N-200i').click();
-
-      cy.contains('Детали ингредиента').should('be.visible');
-      cy.contains('Краторная булка N-200i').should('be.visible');
+      // открытие модального окна ингредиента с помощью custom command
+      cy.openIngredientModal('@bunItem');
+      cy.get('@bunItem').should('be.visible');
       cy.contains('Калории').should('be.visible');
       cy.contains('420').should('be.visible');
     });
 
     it('должен закрывать модальное окно при клике на крестик', () => {
       // открываем модальное окно
-      cy.contains('Биокотлета из марсианской Магнолии').click();
-      cy.contains('Детали ингредиента').should('be.visible');
-
-      // находим кнопку закрытия в модальном окне
+      cy.get('@pattyItem').click();
       cy.contains('Детали ингредиента')
-        .parents('div')
-        .find('button')
-        .first()
-        .click();
+        .as('ingredientModal')
+        .should('be.visible');
+
+      // закрываем модальное окно с помощью custom command
+      cy.closeModal();
 
       // проверяем, что модальное окно закрылось
-      cy.contains('Детали ингредиента').should('not.exist');
+      cy.get('@ingredientModal').should('not.exist');
     });
   });
 
   describe('Создание заказа', () => {
     beforeEach(() => {
-      // перехватываем запросы API для аутентификации и заказа
-      cy.intercept('GET', '**/auth/user', { fixture: 'user.json' }).as(
-        'getUser'
-      );
-      cy.intercept('POST', '**/orders', { fixture: 'order.json' }).as(
-        'createOrder'
-      );
-
-      // устанавливаем моковые токены
-      localStorage.setItem('accessToken', 'Bearer test-access-token');
-      localStorage.setItem('refreshToken', 'test-refresh-token');
-
-      // загружаем страницу и ждем загрузки ингредиентов
-      cy.intercept('GET', '**/ingredients', { fixture: 'ingredients.json' }).as(
-        'getIngredients'
-      );
+      // используем custom commands для аутентификации и настройки моков API
+      cy.loginWithMock();
+      cy.mockApi();
       cy.visit('/');
       cy.wait('@getIngredients');
     });
 
     it('должен создавать заказ после добавления всех ингредиентов', () => {
-      // добавляем булку
-      cy.contains('Краторная булка N-200i').parent().find('button').click();
+      // используем custom command для создания заказа
+      cy.createOrder();
 
-      cy.contains('Краторная булка N-200i (верх)').should('be.visible');
-      cy.contains('Краторная булка N-200i (низ)').should('be.visible');
-
-      // добавляем ингредиенты
-      cy.contains('Биокотлета из марсианской Магнолии')
-        .parent()
-        .find('button')
-        .click();
-      cy.contains('Соус Spicy-X').parent().find('button').click();
+      // проверяем верхнюю и нижнюю булки
+      cy.verifyIngredientInConstructor('Краторная булка N-200i (верх)');
+      cy.verifyIngredientInConstructor('Краторная булка N-200i (низ)');
 
       // проверяем общую сумму заказа
       // булка (1255 * 2) + начинка (424) + соус (90) = 3024
-      cy.contains('3024').should('exist');
-
-      cy.contains('button', 'Оформить заказ').click();
-
-      // ожидаем запрос на создание заказа
-      cy.wait('@createOrder');
+      cy.contains('3024').as('totalPrice').should('exist');
 
       // проверяем, что модальное окно с деталями заказа открылось
-      cy.contains('идентификатор заказа').should('be.visible');
-      cy.contains('12345').should('be.visible');
+      cy.contains('идентификатор заказа')
+        .as('orderNumberTitle')
+        .should('be.visible');
+      cy.contains('12345').as('orderNumber').should('be.visible');
 
-      cy.contains('Ваш заказ начали готовить').should('be.visible');
+      cy.contains('Ваш заказ начали готовить')
+        .as('orderConfirmation')
+        .should('be.visible');
 
       // закрываем модальное окно
       cy.get('body').type('{esc}');
-      cy.contains('идентификатор заказа').should('not.exist');
+      cy.get('@orderNumberTitle').should('not.exist');
 
       // проверяем, что конструктор пуст после оформления заказа
 
@@ -167,7 +132,7 @@ describe('Тесты конструктора бургера', () => {
       cy.contains('верх').should('not.exist');
       cy.contains('низ').should('not.exist');
       // проверка на отсутствие начинок
-      cy.contains('button', 'Оформить заказ')
+      cy.get('@orderButton')
         .parent()
         .within(() => {
           // проверяем, что сумма заказа 0
@@ -177,7 +142,7 @@ describe('Тесты конструктора бургера', () => {
           cy.contains('Биокотлета из марсианской Магнолии').should('not.exist');
           cy.contains('Соус Spicy-X').should('not.exist');
         });
-      cy.contains('button', 'Оформить заказ').should('be.disabled');
+      cy.get('@orderButton').should('be.disabled');
     });
   });
 });

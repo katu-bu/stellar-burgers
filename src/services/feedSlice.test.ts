@@ -1,4 +1,4 @@
-import feedReducer, { fetchFeed, FeedState } from './feedSlice';
+import feedReducer, { fetchFeed, initialState } from './feedSlice';
 import { getFeedsApi, TFeedsResponse } from '../utils/burger-api';
 import { TOrdersData } from '../utils/types';
 
@@ -6,13 +6,6 @@ import { TOrdersData } from '../utils/types';
 jest.mock('../utils/burger-api');
 
 describe('feedSlice', () => {
-  // изначальное состояние для каждого теста
-  const initialState: FeedState = {
-    ordersData: { orders: [], total: 0, totalToday: 0 },
-    isLoading: false,
-    error: null
-  };
-
   // тестовые данные для заказов
   const mockOrdersData: TOrdersData = {
     orders: [

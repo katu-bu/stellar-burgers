@@ -3,32 +3,99 @@
 declare namespace Cypress {
   interface Chainable {
     /**
-     * @param source - CSS-селектор исходного элемента
-     * @param target - CSS-селектор целевого элемента
+     * Добавляет ингредиент в конструктор нажатием на кнопку
+     * @param ingredientAlias - Алиас ингредиента
      */
-    dragAndDrop(source: string, target: string): Chainable<JQuery<HTMLElement>>;
-    
+    addIngredient(ingredientAlias: string): Chainable<JQuery<HTMLElement>>;
+
     /**
-     * @param ingredientName - Имя ингредиента для перетаскивания
+     * Настраивает моки для аутентификации
      */
-    dragIngredientToConstructor(ingredientName: string): Chainable<JQuery<HTMLElement>>;
+    loginWithMock(): Chainable<void>;
+
+    /**
+     * Настраивает моки для API ингредиентов и заказов
+     */
+    mockApi(): Chainable<void>;
+
+    /**
+     * Проверяет наличие ингредиента в конструкторе
+     * @param ingredientName - Имя ингредиента
+     */
+    verifyIngredientInConstructor(
+      ingredientName: string
+    ): Chainable<JQuery<HTMLElement>>;
+
+    /**
+     * Открывает модальное окно ингредиента
+     * @param ingredientAlias - Алиас ингредиента
+     */
+    openIngredientModal(
+      ingredientAlias: string
+    ): Chainable<JQuery<HTMLElement>>;
+
+    /**
+     * Закрывает модальное окно
+     */
+    closeModal(): Chainable<JQuery<HTMLElement>>;
+
+    /**
+     * Создает заказ с базовыми ингредиентами
+     */
+    createOrder(): Chainable<void>;
   }
 }
 
-Cypress.Commands.add('dragAndDrop', (source: string, target: string) => {
-  cy.get(source).trigger('dragstart');
-  cy.get(target).trigger('drop');
-  cy.get(source).trigger('dragend');
+// Добавление ингредиента в конструктор нажатием на кнопку
+Cypress.Commands.add('addIngredient', (ingredientAlias: string) => {
+  cy.get(ingredientAlias).parent().find('button').click();
 });
 
-// Перетаскивание ингредиентов в конструктор
-Cypress.Commands.add('dragIngredientToConstructor', (ingredientName: string) => {
-  cy.contains(ingredientName)
-    .parent()
-    .parent()
-    .trigger('dragstart');
-  
-  cy.contains('button', 'Оформить заказ')
-    .closest('section')
-    .trigger('drop');
+// Настройка моков для аутентификации
+Cypress.Commands.add('loginWithMock', () => {
+  cy.intercept('GET', '**/auth/user', { fixture: 'user.json' }).as('getUser');
+  localStorage.setItem('accessToken', 'Bearer test-access-token');
+  localStorage.setItem('refreshToken', 'test-refresh-token');
+});
+
+// Настройка моков для API ингредиентов и заказов
+Cypress.Commands.add('mockApi', () => {
+  cy.intercept('GET', '**/ingredients', { fixture: 'ingredients.json' }).as(
+    'getIngredients'
+  );
+  cy.intercept('POST', '**/orders', { fixture: 'order.json' }).as(
+    'createOrder'
+  );
+});
+
+// Проверка наличия ингредиента в конструкторе
+Cypress.Commands.add(
+  'verifyIngredientInConstructor',
+  (ingredientName: string) => {
+    cy.get('@orderButton')
+      .closest('section')
+      .within(() => {
+        cy.contains(ingredientName).should('exist');
+      });
+  }
+);
+
+// Открытие модального окна ингредиента
+Cypress.Commands.add('openIngredientModal', (ingredientAlias: string) => {
+  cy.get(ingredientAlias).click();
+  cy.contains('Детали ингредиента').as('ingredientModal').should('be.visible');
+});
+
+// Закрытие модального окна
+Cypress.Commands.add('closeModal', () => {
+  cy.get('[data-cy="modal-close-button"]').click();
+});
+
+// Создание заказа с базовыми ингредиентами
+Cypress.Commands.add('createOrder', () => {
+  cy.addIngredient('@bunItem');
+  cy.addIngredient('@pattyItem');
+  cy.addIngredient('@spicySauceItem');
+  cy.get('@orderButton').click();
+  cy.wait('@createOrder');
 });

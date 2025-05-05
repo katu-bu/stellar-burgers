@@ -1,6 +1,6 @@
 import orderModalReducer, {
   fetchOrder,
-  OrderModalState
+  initialState
 } from './orderModalDataSlice';
 import { getOrderByNumberApi } from '../utils/burger-api';
 import { TOrder } from '../utils/types';
@@ -9,12 +9,6 @@ import { TOrder } from '../utils/types';
 jest.mock('../utils/burger-api');
 
 describe('orderModalDataSlice', () => {
-  // изначальное состояние для каждого теста
-  const initialState: OrderModalState = {
-    isLoading: false,
-    error: null
-  };
-
   // данные для тестов
   const mockOrder: TOrder = {
     _id: '1',

@@ -10,7 +10,7 @@ export interface OrderModalState {
 }
 
 // Изначальное состояние
-const initialState: OrderModalState = {
+export const initialState: OrderModalState = {
   isLoading: false,
   error: null
 };

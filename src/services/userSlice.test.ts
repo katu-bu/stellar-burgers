@@ -3,7 +3,8 @@ import userReducer, {
   updateUser,
   registerUser,
   getUser,
-  logoutUser
+  logoutUser,
+  initialState
 } from './userSlice';
 import {
   getUserApi,
@@ -20,15 +21,6 @@ jest.mock('@api');
 jest.mock('../utils/cookie');
 
 describe('userSlice', () => {
-  // изначальное состояние
-  const initialState = {
-    isAuthChecked: false,
-    isAuthenticated: false,
-    data: null,
-    loginUserError: null,
-    loginUserRequest: false
-  };
-
   // мокаем localStorage
   const localStorageMock = {
     clear: jest.fn()

@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TConstructorItems, TIngredient } from '../utils/types';
 
 // Изначальное состояние
-const initialState: TConstructorItems = {
+export const initialState: TConstructorItems = {
   ingredients: []
 };
 

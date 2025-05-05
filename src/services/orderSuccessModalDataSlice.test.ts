@@ -1,7 +1,8 @@
 import orderSuccessModalReducer, {
   submitOrder,
   resetSuccessModal,
-  OrderSuccessModalState
+  OrderSuccessModalState,
+  initialState
 } from './orderSuccessModalDataSlice';
 import { orderBurgerApi, TNewOrderResponse } from '../utils/burger-api';
 import { TOrderWithName } from '../utils/types';
@@ -10,12 +11,6 @@ import { TOrderWithName } from '../utils/types';
 jest.mock('../utils/burger-api');
 
 describe('orderSuccessModalDataSlice', () => {
-  // изначальное состояние для каждого теста
-  const initialState: OrderSuccessModalState = {
-    isLoading: false,
-    error: null
-  };
-
   // данные для тестов
   const mockOrderWithName: TOrderWithName = {
     name: 'Космический бургер',

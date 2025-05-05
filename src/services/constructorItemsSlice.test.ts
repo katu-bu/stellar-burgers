@@ -2,16 +2,12 @@ import constructorItemsReducer, {
   addIngredient,
   deleteIngredient,
   moveIngredient,
-  clearConstructor
+  clearConstructor,
+  initialState
 } from './constructorItemsSlice';
 import { TConstructorItems, TIngredient } from '../utils/types';
 
 describe('constructorItemsSlice', () => {
-  // изначальное состояние для каждого теста
-  const initialState: TConstructorItems = {
-    ingredients: []
-  };
-
   // данные для тестов
   const mockBun: TIngredient = {
     _id: '1',

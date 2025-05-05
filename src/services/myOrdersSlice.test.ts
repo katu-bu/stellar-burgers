@@ -1,4 +1,4 @@
-import myOrdersReducer, { fetchMyOrders, MyOrdersState } from './myOrdersSlice';
+import myOrdersReducer, { fetchMyOrders, initialState } from './myOrdersSlice';
 import { getOrdersApi, TFeedsResponse } from '@api';
 import { TOrdersData } from '../utils/types';
 
@@ -6,13 +6,6 @@ import { TOrdersData } from '../utils/types';
 jest.mock('@api');
 
 describe('myOrdersSlice', () => {
-  // изначальное состояние для каждого теста
-  const initialState: MyOrdersState = {
-    ordersData: { orders: [], total: 0, totalToday: 0 },
-    isLoading: false,
-    error: null
-  };
-
   // данные для тестов
   const mockOrdersData: TOrdersData = {
     orders: [

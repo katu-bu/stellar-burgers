@@ -1,6 +1,6 @@
 import ingredientsReducer, {
   fetchIngredients,
-  IngredientsState
+  initialState
 } from './ingredientsSlice';
 import { getIngredientsApi } from '../utils/burger-api';
 import { TIngredient } from '../utils/types';
@@ -9,13 +9,6 @@ import { TIngredient } from '../utils/types';
 jest.mock('../utils/burger-api');
 
 describe('ingredientsSlice', () => {
-  // изначальное состояние для каждого теста
-  const initialState: IngredientsState = {
-    ingredients: [],
-    isLoading: false,
-    error: null
-  };
-
   // данные для тестов
   const mockIngredients: TIngredient[] = [
     {

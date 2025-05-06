@@ -67,7 +67,7 @@ type TIngredientsResponse = TServerResponse<{
   data: TIngredient[];
 }>;
 
-type TFeedsResponse = TServerResponse<TOrdersData>;
+export type TFeedsResponse = TServerResponse<TOrdersData>;
 
 export const getIngredientsApi = () =>
   fetch(`${URL}/ingredients`)
@@ -97,7 +97,7 @@ export const getOrdersApi = () =>
     return Promise.reject(data);
   });
 
-type TNewOrderResponse = TServerResponse<TOrderWithName>;
+export type TNewOrderResponse = TServerResponse<TOrderWithName>;
 
 export const orderBurgerApi = (data: string[]) =>
   fetchWithRefresh<TNewOrderResponse>(`${URL}/orders`, {

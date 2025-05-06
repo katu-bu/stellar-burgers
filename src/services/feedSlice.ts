@@ -10,7 +10,7 @@ export interface FeedState {
 }
 
 // Изначальное состояние
-const initialState: FeedState = {
+export const initialState: FeedState = {
   ordersData: { orders: [], total: 0, totalToday: 0 },
   isLoading: false,
   error: null
@@ -24,7 +24,7 @@ export const fetchFeed = createAsyncThunk(
       const data = await getFeedsApi();
       return data;
     } catch (error) {
-      return rejectWithValue('Не удалось загрузить фид');
+      return rejectWithValue('Не удалось загрузить список всех заказов');
     }
   }
 );

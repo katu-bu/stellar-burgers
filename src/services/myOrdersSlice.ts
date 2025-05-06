@@ -10,7 +10,7 @@ export interface MyOrdersState {
 }
 
 // Изначальное состояние
-const initialState: MyOrdersState = {
+export const initialState: MyOrdersState = {
   ordersData: { orders: [], total: 0, totalToday: 0 },
   isLoading: false,
   error: null

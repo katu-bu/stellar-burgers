@@ -19,7 +19,7 @@ type TUserState = {
   loginUserRequest: boolean;
 };
 
-const initialState: TUserState = {
+export const initialState: TUserState = {
   isAuthChecked: false, // проверка токена пользователя
   isAuthenticated: false,
   data: null,
